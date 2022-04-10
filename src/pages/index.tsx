@@ -1,7 +1,6 @@
+import { useState } from 'react';
 import { GetStaticProps, NextPage } from 'next';
 import Prismic from '@prismicio/client';
-import { format } from 'date-fns';
-import localePtBr from 'date-fns/locale/pt-BR';
 import Link from 'next/link';
 
 import { getPrismicClient } from '../services/prismic';
@@ -33,10 +32,20 @@ interface HomeProps {
 const Home: NextPage<HomeProps> = ({
   postsPagination: { results, next_page: nextPage },
 }) => {
+  const [pagination, setPagination] = useState({ results, nextPage });
+
+  const loadMore = async (): Promise<void> => {
+    const response = await (await fetch(nextPage)).json();
+    setPagination(prev => ({
+      nextPage: response.next_page,
+      results: [...prev.results, ...response.results],
+    }));
+  };
+
   return (
     <main className={commonStyles.pageContainer}>
       <ul className={styles.postList}>
-        {results.map(item => (
+        {pagination.results.map(item => (
           <li key={item.uid}>
             <Link href={`/post/${item.uid}`}>
               <a>
@@ -52,7 +61,7 @@ const Home: NextPage<HomeProps> = ({
         ))}
       </ul>
       {!!nextPage && (
-        <button type="button" className={styles.loadMore}>
+        <button type="button" className={styles.loadMore} onClick={loadMore}>
           Carregar mais posts
         </button>
       )}
@@ -65,27 +74,13 @@ export default Home;
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   const prismic = getPrismicClient();
   const response = await prismic.query(
-    Prismic.predicates.at('document.type', 'post')
+    Prismic.predicates.at('document.type', 'post'),
+    { pageSize: 3 }
   );
 
   return {
     props: {
-      postsPagination: {
-        next_page: response.next_page,
-        results: response.results.map(item => ({
-          uid: item.uid,
-          first_publication_date: format(
-            new Date(item.first_publication_date),
-            'dd MMM yyyy',
-            { locale: localePtBr }
-          ),
-          data: {
-            author: item.data.author,
-            subtitle: item.data.subtitle,
-            title: item.data.title,
-          },
-        })),
-      },
+      postsPagination: response,
     },
   };
 };
