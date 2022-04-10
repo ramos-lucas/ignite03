@@ -1,1 +1,46 @@
-// TODO
+.postList {
+    li {
+      list-style-type: none;
+      & + li {
+        margin-top: 48px
+      }
+
+      p {
+        font-size: 18px;
+        margin: 8px 0px 24px;
+      }
+
+      h2 {
+        transition: color 200ms;
+      }
+
+      &:hover h2 {
+        color: var(--highlight);
+      }
+    }
+}
+
+.postFooter {
+  display: block;
+  color: var(--info);
+
+  span + span {
+    margin-left: 26px;
+  }
+}
+
+.loadMore {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  color: var(--highlight);
+  margin-top: 64px;
+  font-weight: 700;
+  font-size: 18px;
+  transition: filter 200ms;
+
+  &:hover {
+    filter: brightness(0.7);
+  }
+}
