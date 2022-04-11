@@ -1,1 +1,36 @@
-// TODO
+.article {
+  .postDetails{
+    & span + span {
+      margin-left: 24px;
+    }
+  }
+
+  section {
+    margin-top: 64px;
+  }
+
+  h1 {
+    font-weight: bold;
+    font-size: 48px;
+    color: var(--heading);
+    margin-bottom: 24px;
+  }
+
+  h2 {
+    font-weight: bold;
+    font-size: 36px;
+    color: var(--heading);
+    margin-bottom: 24px;
+  }
+
+  p {
+    line-height: 140%;
+    &+ p {
+      margin-top: 24px;
+    }
+
+    a {
+      color: var(--highlight);
+    }
+  }
+}
